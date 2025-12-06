@@ -68,10 +68,10 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     int output_width, output_height;
     SDL_GetRenderOutputSize(p_renderer, &output_width, &output_height);
-    SDL_FRect p_destination_rect = {0, 0, output_width, output_height};
+    SDL_FRect destination_rect = {0, 0, output_width, output_height};
 
     SDL_RenderClear(p_renderer);
-    SDL_RenderTexture(p_renderer, p_texture, NULL, &p_destination_rect);
+    SDL_RenderTexture(p_renderer, p_texture, NULL, &destination_rect);
     SDL_RenderPresent(p_renderer);
 
     return SDL_APP_CONTINUE;
