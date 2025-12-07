@@ -22,11 +22,6 @@
             sdl3
             sdl3-image
           ];
-
-          installPhase = ''
-            mkdir -p $out/bin
-            cp miv $out/bin/
-          '';
         };
 
         devShells.default = pkgs.mkShell {

@@ -1,0 +1,80 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (format: X.Y.Z)"
+        required: true
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        uses: libsdl-org/setup-sdl@main
+        with:
+          install-linux-dependencies: true
+          version: 3-latest
+          version-sdl-image: 3-latest
+      
+      - name: Configure CMake
+        run: cmake -S . -B build 
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: miv_${{ github.event.inputs.version }}_${{ runner.os }}_${{ runner.arch }}
+          path: build/miv
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: brew install sdl3 sdl3_image
+      
+      - name: Configure CMake
+        run: cmake -S . -B build 
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: miv_${{ github.event.inputs.version }}_${{ runner.os }}_${{ runner.arch }}
+          path: build/miv
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: vcpkg install sdl3:x64-windows sdl3-image:x64-windows
+
+      - name: Configure CMake
+        run: cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release 
+          -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: miv_${{ github.event.inputs.version }}_${{ runner.os }}_${{ runner.arch }}
+          path: build/Release/miv.exe

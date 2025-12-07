@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.31)
 project(miv C)
 
 find_package(SDL3 REQUIRED)
@@ -10,3 +10,5 @@ target_link_libraries(miv PRIVATE
   SDL3::SDL3
   SDL3_image::SDL3_image
 )
+
+install(TARGETS miv RUNTIME DESTINATION bin)
