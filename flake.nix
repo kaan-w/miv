@@ -11,7 +11,7 @@
       perSystem = { self', pkgs, lib, ... }: {
         packages.default = pkgs.stdenv.mkDerivation {
           pname = "miv";
-          version = "0.2.0";
+          version = "0.2.1";
           src = lib.cleanSource ./.;
 
           nativeBuildInputs = with pkgs; [
