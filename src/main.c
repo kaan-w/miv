@@ -12,6 +12,7 @@
 static SDL_Window *p_window = NULL;
 static SDL_Renderer *p_renderer = NULL;
 static SDL_Texture *p_texture = NULL;
+static float zoom = 1.0f;
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
     if (argc < 2) {
@@ -64,8 +65,23 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     }
 
     if(event->type == SDL_EVENT_KEY_DOWN) {
-        if(event->key.scancode == SDL_SCANCODE_ESCAPE) {
+        switch (event->key.scancode) {
+        case SDL_SCANCODE_ESCAPE:
             return SDL_APP_SUCCESS;
+            break;
+
+        case SDL_SCANCODE_RIGHTBRACKET:
+            zoom += 0.1f;
+            SDL_SetRenderScale(p_renderer, zoom, zoom);
+            break;
+
+        case SDL_SCANCODE_LEFTBRACKET:
+            zoom = SDL_max(zoom - 0.1f, 1.0f);
+            SDL_SetRenderScale(p_renderer, zoom, zoom);
+            break;
+
+        default:
+            break;
         }
     }
 
@@ -75,10 +91,18 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     int output_width, output_height;
     SDL_GetRenderOutputSize(p_renderer, &output_width, &output_height);
-    SDL_FRect destination_rect = {0, 0, output_width, output_height};
+    float offset_x = (output_width * (1.0f - zoom)) / (2.0f * zoom);
+    float offset_y = (output_height * (1.0f - zoom)) / (2.0f * zoom);
+
+    SDL_FRect destination = {
+        offset_x,
+        offset_y,
+        output_width,
+        output_height
+    };
 
     SDL_RenderClear(p_renderer);
-    SDL_RenderTexture(p_renderer, p_texture, NULL, &destination_rect);
+    SDL_RenderTexture(p_renderer, p_texture, NULL, &destination);
     SDL_RenderPresent(p_renderer);
 
     return SDL_APP_CONTINUE;
